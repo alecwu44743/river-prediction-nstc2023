@@ -2,7 +2,7 @@ import pandas as pd
 import csv
 import os
 
-root_path = "./Tamsui-River-DATA"
+root_path = "../Tamsui-River-DATA"
 save_path = "./result"
 
 filename = "river.csv"
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         if dirdir == ".DS_Store":
             continue
         
-        now_to_path = "./Tamsui-River-DATA/" + dirdir
+        now_to_path = "../Tamsui-River-DATA/" + dirdir
         for river_file in os.listdir(now_to_path):
             now_to_file = now_to_path + "/" + river_file
             if not river_file == "T9612010.A" and not os.path.isdir(now_to_file) and not river_file.endswith(".DS_Store") and not river_file.endswith(".git") and not river_file.endswith(".gitignore") and not river_file.endswith(".zip") and not river_file.endswith(".CSV") and not river_file.endswith(".csv") and not river_file.endswith(".gitignore") and not river_file.endswith(".ZIP") and not river_file.endswith(".EXE") and not river_file.endswith(".txt") and not river_file.endswith(".TXT") and not river_file.endswith(".doc") and not river_file.endswith(".INT") and not river_file.endswith(".OUT") and not river_file.endswith(".DAT") and not river_file.endswith(".py"):
@@ -90,6 +90,7 @@ if __name__ == '__main__':
                 
                 dataFrame = pd.read_csv(filename)
                 dataFrame.sort_values('x' , axis=0, ascending=True,inplace=True, na_position='first')
+                dataFrame.drop_duplicates(subset=['x'], keep='first', inplace=True)
                 
                 # print(dataFrame)
                 
