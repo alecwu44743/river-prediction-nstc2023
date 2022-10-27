@@ -25,7 +25,7 @@ if __name__ == "__main__":
         if dirdir == ".DS_Store":
             continue
         
-        print("Processing: " + "./lab/" + dirdir)
+        print("Processing: " + "./result_non-duplicated/" + dirdir)
         
         ans = os.path.splitext(dirdir)[0]
         
