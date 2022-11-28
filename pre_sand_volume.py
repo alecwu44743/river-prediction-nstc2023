@@ -8,34 +8,30 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 
+nor_data = pd.DataFrame()
+
 
 def readTrain():
     train = pd.read_csv("./typhoon06/2012su.csv")
     return train
 
 
-def normalization(train_norm):
-    print("aaaaa")
-    print(type(train_norm))
-    train_norm = train_norm.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
-    return train_norm
-
-def inverse_normalization(train_norm):
-    train_norm = train_norm.apply(lambda x: (1 - np.mean(x)) / (np.max(x) - np.min(x)))
-    return train_norm
-
-
-def nor():
+def normalization(training_set):
     sc = MinMaxScaler(feature_range = (0, 1))
     training_set_scaled = sc.fit_transform(training_set)
     
-    return sc
+    nor_data = training_set_scaled
+    
+    return training_set_scaled
 
 
-def buildTrain(train, pastDay=30, futureDay=5):
+
+def buildTrain(train, pastDay=30, futureDay=5, n=10):
     X_train, Y_train = [], []
     
-    for i in range(train.shape[0]-futureDay-pastDay-10):
+    train = pd.DataFrame(train, columns=['h', 'flow', 'sand'])
+    
+    for i in range(train.shape[0]-futureDay-pastDay-n):
         X_train.append(np.array(train.iloc[i:i+pastDay]))
         # Y_train.append(list(map(list, [np.array(train.iloc[i+pastDay:i+pastDay+futureDay]["sand"])])))
         
@@ -83,8 +79,9 @@ def buildLSTM(x_train, y_train):
 
     dataset_train = pd.read_csv('./typhoon06/2012su.csv')
     inputs = normalization(dataset_train)
+    
     dataset_test = pd.read_csv("./typhoon06/2012su.csv")
-    real_sand = dataset_test.iloc[:]["sand"]
+    real_sand = dataset_test.iloc[0:75]["sand"]
     
     # ssc = MinMaxScaler(feature_range = (0, 1))
     
@@ -102,17 +99,28 @@ def buildLSTM(x_train, y_train):
     # inputs = dataset_test.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
     
     
-    X_test = []
-    for i in range(inputs.shape[0]-1-3):
-        X_test.append(np.array(inputs.iloc[i:i+3])) # X_train.append(np.array(train.iloc[i:i+pastDay]))
+    # X_test, Y_test = buildTrain(normalization(dataset_test), 1, 1, 0)
+    # for i in range(inputs.shape[0]-1-3):
+    #     X_test.append(np.array(inputs.iloc[i:i+3])) # X_train.append(np.array(train.iloc[i:i+pastDay]))
     
-        # print("y_train")
-        # print(train.iloc[i+pastDay:i+pastDay+futureDay]["sand"])
-        # print(len(Y_train)) 
-        # print()
+    #     # print("y_train")
+    #     # print(train.iloc[i+pastDay:i+pastDay+futureDay]["sand"])
+    #     # print(len(Y_train)) 
+    #     # print()
+    X_test, Y_test = buildTrain(normalization(dataset_test), 3, 1, 0)
     X_test = np.array(X_test)
     print(X_test)
     print(X_test.shape)
+    
+    # X_test = nor_data
+    # print(X_test)
+    # print(X_test.shape)
+    
+    # sc_X_test = MinMaxScaler(feature_range = (0, 1)).fit(X_test)
+    # X_test = sc_X_test.transform(X_test)
+    
+    sc_Y_test = MinMaxScaler(feature_range = (0, 1)).fit(np.array(real_sand).reshape(-1, 1))
+    
 
     # # for i in range(3, len(inputs)):
     # #     X_test.append(inputs[i-3:i,])
@@ -129,7 +137,7 @@ def buildLSTM(x_train, y_train):
     print(predicted_sand)
     
     predicted_sand = pd.DataFrame(predicted_sand)
-    predicted_sand = inverse_normalization(predicted_sand)
+    predicted_sand = sc_Y_test.inverse_transform(predicted_sand)
     
     print(predicted_sand)
     
