@@ -149,7 +149,9 @@ def buildLSTM(x_train, y_train):
     plt.xlabel('Time')
     plt.ylabel('sand')
     plt.legend()
-    plt.show()
+    # plt.show()
+    
+    plt.savefig('./result_image/sand-20221129.png', dpi=1000)
 
 
 
