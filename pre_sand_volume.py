@@ -24,12 +24,12 @@ def normalization(training_set):
 
 
 
-def buildTrain(train, pastDay=30, futureDay=5, n=10):
+def buildTrain(train, pastDay=30, futureDay=5):
     X_train, Y_train = [], []
     
     train = pd.DataFrame(train, columns=['h', 'flow', 'sand'])
     
-    for i in range(train.shape[0]-futureDay-pastDay-n):
+    for i in range(train.shape[0]-futureDay-pastDay): # range(train.shape[0]-futureDay-pastDay)
         X_train.append(np.array(train.iloc[i:i+pastDay]))
         # Y_train.append(list(map(list, [np.array(train.iloc[i+pastDay:i+pastDay+futureDay]["sand"])])))
         
@@ -66,10 +66,10 @@ def buildLSTM(x_train, y_train):
     regressor.add(Dense(units = 1))
     
     regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
-    regressor.fit(x_train, y_train, epochs = 1000, batch_size = 32)
+    regressor.fit(x_train, y_train, epochs = 1500, batch_size = 64)
     
     dataset_test = pd.read_csv("./typhoon06/2012su.csv")
-    real_sand = dataset_test.iloc[0:75]["sand"]
+    real_sand = dataset_test.iloc[0:80]["sand"]
     
     dataset_test = normalization(dataset_test)
     dataset_test = pd.DataFrame(dataset_test, columns=['h', 'flow', 'sand'])
